@@ -1,10 +1,15 @@
 from data import Kofu_shobo
 from fastapi import FastAPI
+import os
 
 data = Kofu_shobo()
 data.create_df()
 
-app = FastAPI()
+root_path = os.getenv("ROOT_PATH", "")
+app = FastAPI(
+    title="消防水利施設一覧（消火栓）API",
+    root_path=root_path
+)
 
 @app.get("/")
 def hello():
