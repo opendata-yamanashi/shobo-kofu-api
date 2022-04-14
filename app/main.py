@@ -17,11 +17,11 @@ def hello():
 
 @app.get("/list/")
 def get_data():
-    return data.df.T
+    return data.df.to_dict("records")
 
 @app.get("/query/")
 def do_query(q=None):
-    return data.query(q).T
+    return data.query(q).to_dict("records")
 
 @app.get("/version/")
 def get_version():
