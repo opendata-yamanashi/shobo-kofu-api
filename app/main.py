@@ -9,7 +9,11 @@ from typing import List
 data = Kofu_shobo()
 data.create_df()
 
-root_path = os.getenv("ROOT_PATH", "")
+if os.getenv("PYTHON_ENV") == "production":
+    root_path = os.getenv("ROOT_PATH", "/")
+else:
+    root_path = "/"
+
 app = FastAPI(
     title="消防水利施設一覧（消火栓）API",
     root_path=root_path
