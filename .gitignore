@@ -1,3 +1,4 @@
 env/
 data/
 app/__pycache__/
+.env
