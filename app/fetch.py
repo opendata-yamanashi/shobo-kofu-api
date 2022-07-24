@@ -18,6 +18,10 @@ class FetcherBase():
         self.sheet_header = sheet_header
 
     def fetch(self):
+        records = self.download()
+        self.reflect(records)
+
+    def download(self):
         res = requests.get(self.url, allow_redirects=True)
         file: Any = BytesIO(res.content)
         df = pd.read_excel(
@@ -56,6 +60,4 @@ if __name__ == "__main__":
     FILE_URL = "https://www.city.kofu.yamanashi.jp/joho/opendata/shisetsu/documents/syokasenspot_20200401.xlsx"
     SHEET_NAME = "消防水利施設一覧（消火栓）※20200401現在"
 
-    fetcher = Fetcher(FILE_URL, SHEET_NAME)
-    records = fetcher.fetch()
-    fetcher.reflect(records)
+    Fetcher(FILE_URL, SHEET_NAME).fetch()
