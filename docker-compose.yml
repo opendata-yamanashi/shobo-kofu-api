@@ -1,0 +1,19 @@
+version: "3"
+
+x-vars:
+  - &ROOT_PATH /api/shobo-kofu
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: app.dockerfile
+    environment:
+      PYTHON_ENV: ${PYTHON_ENV}
+      ROOT_PATH: *ROOT_PATH
+      PYTHONPATH: /
+      APP_MODULE: app.main:app
+    volumes:
+      - ./app:/app
+    ports:
+      - ${PORT:-80}:80
