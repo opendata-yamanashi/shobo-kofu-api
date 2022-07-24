@@ -17,3 +17,10 @@ services:
       - ./app:/app
     ports:
       - ${PORT:-80}:80
+
+  db:
+    image: postgres:latest
+    environment:
+      - PGUSER=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
