@@ -44,14 +44,14 @@ class AbstractFetcher(metaclass=ABCMeta):
 
 
 class ShoboDataFetcher(AbstractFetcher):
-    def parse(self, df: pd.DataFrame) -> pd.DataFrame:
+    def parse(self, df):
         df.columns = [neologdn.normalize(i) for i in df.columns]
         df["コード名称(地区コード)"] = df["コード名称(地区コード)"].map(neologdn.normalize)
         df["町名(漢字)"] = df["町名(漢字)"].map(neologdn.normalize)
 
         return df
 
-    def reflect(self, records: List[Dict[str, Any]]):
+    def reflect(self, records):
         with get_session() as session:
             for record in records:
                 session.add(ShoboDataWithId(**record))
