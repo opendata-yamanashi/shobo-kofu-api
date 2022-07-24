@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, List, Sequence, Union
 
 from pathlib import Path
@@ -11,7 +12,7 @@ import neologdn
 from db import ShoboDataWithId, get_session
 
 
-class FetcherBase():
+class AbstractFetcher(metaclass=ABCMeta):
     def __init__(self, url: str, sheet_name: Union[str, Path], *, sheet_header: Union[int, Sequence[int], None] = 0) -> None:
         self.url = url
         self.sheet_name = sheet_name
@@ -34,14 +35,15 @@ class FetcherBase():
 
         return df.to_dict("records")
 
+    @abstractmethod
     def reflect(self, records: List[Dict[str, Any]]) -> None:
         pass
 
+    @abstractmethod
     def parse(self, df: DataFrame) -> DataFrame:
-        return df
+        pass
 
-
-class Fetcher(FetcherBase):
+class Fetcher(AbstractFetcher):
     def parse(self, df: DataFrame) -> DataFrame:
         df.columns = [neologdn.normalize(i) for i in df.columns]
         df["コード名称(地区コード)"] = df["コード名称(地区コード)"].map(neologdn.normalize)
