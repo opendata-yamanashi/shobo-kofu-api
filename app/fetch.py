@@ -1,7 +1,6 @@
-from typing import Any, Dict, List, Sequence, Union, cast
+from typing import Any, Dict, List, Sequence, Union
 
 from pathlib import Path
-import csv
 from io import BytesIO
 
 import pandas as pd
@@ -9,7 +8,7 @@ from pandas import DataFrame
 import requests
 import neologdn
 
-from model import ShoboData
+from db import ShoboDataWithId, get_session
 
 
 class FetcherBase():
@@ -46,26 +45,17 @@ class Fetcher(FetcherBase):
 
         return df
 
-    def reflect(self, records: List[Dict[str, Any]], dir: Path, name: str):
-        if not dir.exists():
-            dir.mkdir()
-
-        schema = ShoboData.schema().get("properties")
-        keys = cast(dict, schema).keys()
-
-        with open((dir / name).with_suffix(".csv"), "w") as f:
-            writer = csv.DictWriter(f, keys, extrasaction="ignore")
-            writer.writeheader()
-            writer.writerows(records)
+    def reflect(self, records: List[Dict[str, Any]]):
+        with get_session() as session:
+            for record in records:
+                session.add(ShoboDataWithId(**record))
+            session.commit()
 
 
 if __name__ == "__main__":
     FILE_URL = "https://www.city.kofu.yamanashi.jp/joho/opendata/shisetsu/documents/syokasenspot_20200401.xlsx"
     SHEET_NAME = "消防水利施設一覧（消火栓）※20200401現在"
 
-    FILE_DIR = Path(__file__).absolute().parent.parent / "data"
-    FILE_NAME = FILE_URL.split("/")[-1]
-
     fetcher = Fetcher(FILE_URL, SHEET_NAME)
     records = fetcher.fetch()
-    fetcher.reflect(records, FILE_DIR, FILE_NAME)
+    fetcher.reflect(records)
