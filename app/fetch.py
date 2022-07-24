@@ -2,10 +2,9 @@ from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, List, Sequence, Union
 
 from pathlib import Path
-from io import BytesIO
+import io
 
 import pandas as pd
-from pandas import DataFrame
 import requests
 import neologdn
 
@@ -24,7 +23,7 @@ class AbstractFetcher(metaclass=ABCMeta):
 
     def download(self):
         res = requests.get(self.url, allow_redirects=True)
-        file: Any = BytesIO(res.content)
+        file: Any = io.BytesIO(res.content)
         df = pd.read_excel(
             file,
             sheet_name=str(self.sheet_name),
@@ -36,15 +35,16 @@ class AbstractFetcher(metaclass=ABCMeta):
         return df.to_dict("records")
 
     @abstractmethod
-    def reflect(self, records: List[Dict[str, Any]]) -> None:
+    def parse(self, df: pd.DataFrame) -> pd.DataFrame:
         pass
 
     @abstractmethod
-    def parse(self, df: DataFrame) -> DataFrame:
+    def reflect(self, records: List[Dict[str, Any]]) -> None:
         pass
 
+
 class Fetcher(AbstractFetcher):
-    def parse(self, df: DataFrame) -> DataFrame:
+    def parse(self, df: pd.DataFrame) -> pd.DataFrame:
         df.columns = [neologdn.normalize(i) for i in df.columns]
         df["コード名称(地区コード)"] = df["コード名称(地区コード)"].map(neologdn.normalize)
         df["町名(漢字)"] = df["町名(漢字)"].map(neologdn.normalize)
