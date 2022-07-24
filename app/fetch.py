@@ -43,7 +43,7 @@ class AbstractFetcher(metaclass=ABCMeta):
         pass
 
 
-class Fetcher(AbstractFetcher):
+class ShoboDataFetcher(AbstractFetcher):
     def parse(self, df: pd.DataFrame) -> pd.DataFrame:
         df.columns = [neologdn.normalize(i) for i in df.columns]
         df["コード名称(地区コード)"] = df["コード名称(地区コード)"].map(neologdn.normalize)
@@ -62,4 +62,4 @@ if __name__ == "__main__":
     FILE_URL = "https://www.city.kofu.yamanashi.jp/joho/opendata/shisetsu/documents/syokasenspot_20200401.xlsx"
     SHEET_NAME = "消防水利施設一覧（消火栓）※20200401現在"
 
-    Fetcher(FILE_URL, SHEET_NAME).fetch()
+    ShoboDataFetcher(FILE_URL, SHEET_NAME).fetch()
