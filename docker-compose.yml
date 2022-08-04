@@ -8,8 +8,6 @@ services:
     build:
       context: .
       dockerfile: app.dockerfile
-    env_file:
-      - .env
     environment:
       PYTHON_ENV: ${PYTHON_ENV:-development}
       ROOT_PATH: *ROOT_PATH
