@@ -8,15 +8,17 @@ services:
     build:
       context: .
       dockerfile: app.dockerfile
+    env_file:
+      - .env
     environment:
-      PYTHON_ENV: ${PYTHON_ENV}
+      PYTHON_ENV: ${PYTHON_ENV:-development}
       ROOT_PATH: *ROOT_PATH
       PYTHONPATH: /
       APP_MODULE: app.main:app
     volumes:
       - ./app:/app
     ports:
-      - ${PORT:-80}:80
+      - ${PORT:-8000}:80
 
   db:
     image: postgres:latest
