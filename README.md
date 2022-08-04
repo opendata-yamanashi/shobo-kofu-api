@@ -24,6 +24,9 @@ $ curl http://localhost:8000/
 ```
 
 ## Environment variables
+環境変数を設定する場合は、.envファイルを作成し、記載してください。
+.envファイルが無くても開発環境で動作するようになっています。
+
 - ### PYTHON_ENV
   実行環境を指定する文字列です。開発環境ではdevelopment, 本番環境ではproductionを設定してください。デフォルトはdevelopmentです。  
 
