@@ -1,15 +1,18 @@
-from data import Kofu_shobo
+from typing import List
+
 from fastapi import FastAPI
 import os
 
-from model import ShoboData
 from pydantic import BaseModel, Field
-from typing import List
+from sqlmodel import select
+from db import ShoboData, ShoboDataWithId, get_session
 
-data = Kofu_shobo()
-data.create_df()
 
-root_path = os.getenv("ROOT_PATH", "")
+if os.getenv("PYTHON_ENV") == "production":
+    root_path = os.getenv("ROOT_PATH", "/")
+else:
+    root_path = "/"
+
 app = FastAPI(
     title="消防水利施設一覧（消火栓）API",
     root_path=root_path
@@ -21,15 +24,21 @@ def hello():
 
 @app.get("/list/", response_model=List[ShoboData])
 def get_data():
-    return data.df.to_dict("records")
+    with get_session() as session:
+        statement = select(ShoboDataWithId)
+        result = session.exec(statement)
+        return result.all()
 
 @app.get("/query/", response_model=List[ShoboData])
 def do_query(q=None):
-    return data.query(q).to_dict("records")
+    with get_session() as session:
+        statement = select(ShoboDataWithId)
+        result = session.exec(statement)
+        return result.all()
 
 class VersionEndpointResponse(BaseModel):
     version: str = Field(None, alias="version")
 
 @app.get("/version/", response_model=VersionEndpointResponse)
 def get_version():
-    return {"version": data.get_version()}
+    return {"version": "unkown"}

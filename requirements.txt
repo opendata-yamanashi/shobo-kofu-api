@@ -4,3 +4,5 @@ openpyxl
 pandas
 neologdn
 requests
+sqlmodel
+psycopg2
